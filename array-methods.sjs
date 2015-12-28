@@ -27,127 +27,147 @@ macro filter {
   rule { ($array, $callback:ident) } => {
       (function() {
         var ret = new Array();
-        for (var i = 0; i < $array.length; i++) {
-          if ($callback($array[i], i, $array)) {
-            ret.push($array[i]);
+        forEach($array, function(item, i) {
+          if ($callback(item, i, $array)) {
+            ret.push(item);
           }
-        }
+        });
         return ret;
       })();
   }
   rule { ($array, $callback:ident, $scope) } => {
     (function() {
         var ret = new Array();
-        for (var i = 0; i < $array.length; i++) {
-          if ($callback.call($scope, $array[i], i, $array)) {
-            ret.push($array[i]);
+        forEach($array, function(item, i) {
+          if ($callback.call($scope, item, i, $array)) {
+            ret.push(item);
           }
-        }
+        });
         return ret;
     })();
   }
   
   rule { ($array, $callback:expr) } => {
-      (function() {
-        var ret = new Array();
-        for (var i = 0; i < $array.length; i++) {
-          if ($callback($array[i], i, $array)) {
-            ret.push($array[i]);
-          }
+    (function() {
+      var ret = new Array();
+      forEach($array, function(item, i) {
+        if ($callback(item, i, $array)) {
+          ret.push(item);
         }
-        return ret;
-      })();
+      });
+      return ret;
+    })();
   }
   
   rule { ($array, $callback:expr, $scope) } => {
     (function() {
-        var ret = new Array();
-        for (var i = 0; i < $array.length; i++) {
-          if ($callback.call($scope, $array[i], i, $array)) {
-            ret.push($array[i]);
-          }
+      var ret = new Array();
+
+      forEach($array, function(item, i) {
+        if ($callback.call($scope, item, i, $array)) {
+          ret.push(item);
         }
-        return ret;
+      });
+
+      return ret;
     })();
   }
 }
 
 macro map {
   rule { ($array, $callback:ident) } => {
-      (function() {
-        var ret = new Array($array.length);
-        for (var i = 0; i < $array.length; i++) {
-          ret[i] = $callback($array[i], i, $array);
-        }return ret;
-      })();
+    (function() {
+      var ret = new Array($array.length);
+
+      forEach($array, function(item, i) {
+        ret[i] = $callback(item, i, $array);
+      });
+      
+      return ret;
+    })();
   }
   rule { ($array, $callback:ident, $scope) } => {
     (function() {
-        var ret = new Array($array.length);
-        for (var i = 0; i < $array.length; i++) {
-          ret[i] = $callback.call($scope, $array[i], i, $array);
-        }
-        return ret;
+      var ret = new Array($array.length);
+      
+      forEach($array, function(item, i) {
+        ret[i] = $callback.call($scope, item, i, $array);
+      });
+
+      return ret;
     })();
   }
   
   rule { ($array, $callback:expr) } => {
     (function() {
-        var ret = new Array($array.length);
-        for (var i = 0; i < $array.length; i++) {
-          ret[i] = $callback($array[i], i, $array);
-        }
-        return ret;
+      var ret = new Array($array.length);
+
+      forEach($array, function(item, i) {
+        ret[i] = $callback(item, i, $array);
+      });      
+
+      return ret;
     })();
   }
   
   rule { ($array, $callback:expr, $scope) } => {
     (function() {
-        var ret = new Array($array.length);
-        for (var i = 0; i < $array.length; i++) {
-          ret[i] = $callback.call($scope, $array[i], i, $array);
-        }
-        return ret;
+      var ret = new Array($array.length);
+      
+      forEach($array, function(item, i) {
+        ret[i] = $callback.call($scope, item, i, $array);
+      });
+
+      return ret;
     })();
   }
 }
 
-macro map {
+macro reduce {
   rule { ($array, $callback:ident, init) } => {
-      (function() {
-        var ret = new Array($array.length);
-        for (var i = 0; i < $array.length; i++) {
-          ret[i] = $callback($array[i], i, $array);
-        }return ret;
-      })();
-  }
-  rule { ($array, $callback:ident, $scope) } => {
     (function() {
-        var ret = new Array($array.length);
-        for (var i = 0; i < $array.length; i++) {
-          ret[i] = $callback.call($scope, $array[i], i, $array);
-        }
-        return ret;
+      var ret = $init;
+      // TODO
+      // More checks here
+      forEach($array, function(item, i, array) {
+        ret = $callback(ret, item);
+      });
+      return ret;
+    })();
+  }
+  rule { ($array, $callback:ident, init, $scope) } => {
+    (function() {
+      var ret = $init;
+      // TODO
+      // More checks here
+      forEach($array, function(item, i, array) {
+        ret = $callback.call($scope, ret, item);
+      });
+      return ret;
     })();
   }
   
   rule { ($array, $callback:expr) } => {
     (function() {
-        var ret = new Array($array.length);
-        for (var i = 0; i < $array.length; i++) {
-          ret[i] = $callback($array[i], i, $array);
-        }
-        return ret;
+      var ret = $init;
+      // TODO
+      // More checks here
+      forEach($array, function(item, i, array) {
+        ret = $callback(ret, item);
+      });
+      return ret;
     })();
   }
   
   rule { ($array, $callback:expr, $scope) } => {
     (function() {
-        var ret = new Array($array.length);
-        for (var i = 0; i < $array.length; i++) {
-          ret[i] = $callback.call($scope, $array[i], i, $array);
-        }
-        return ret;
+      var ret = $init;
+      // TODO
+      // More checks here
+      forEach($array, function(item, i, array) {
+        ret = $callback.call($scope, ret, item);
+      });
+      return ret;
     })();
   }
 }
@@ -155,3 +175,4 @@ macro map {
 exports.forEach = forEach;
 exports.map = map;
 exports.filter = filter;
+exports.reduce = reduce;
