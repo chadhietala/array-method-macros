@@ -333,4 +333,4 @@ exports.filter = filter;
 exports.reduce = reduce;
 exports.reduceRight = reduceRight;
 exports.every = every;
-export.some = some;
+exports.some = some;
