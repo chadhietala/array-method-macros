@@ -25,24 +25,28 @@ macro forEach {
 
 macro filter {
   rule { ($array, $callback:ident) } => {
-      (function() {
-        var ret = new Array();
-        forEach($array, function(item, i) {
-          if ($callback(item, i, $array)) {
-            ret.push(item);
-          }
-        });
-        return ret;
-      })();
+    (function() {
+      var ret = new Array();
+
+      forEach($array, function(item, i) {
+        if ($callback(item, i, $array)) {
+          ret.push(item);
+        }
+      });
+
+      return ret;
+    })();
   }
   rule { ($array, $callback:ident, $scope) } => {
     (function() {
         var ret = new Array();
+
         forEach($array, function(item, i) {
           if ($callback.call($scope, item, i, $array)) {
             ret.push(item);
           }
         });
+
         return ret;
     })();
   }
@@ -50,11 +54,13 @@ macro filter {
   rule { ($array, $callback:expr) } => {
     (function() {
       var ret = new Array();
+
       forEach($array, function(item, i) {
         if ($callback(item, i, $array)) {
           ret.push(item);
         }
       });
+
       return ret;
     })();
   }
@@ -124,48 +130,48 @@ macro map {
 }
 
 macro reduce {
-  rule { ($array, $callback:ident, init) } => {
+  rule { ($array, $combine:ident, init) } => {
     (function() {
       var ret = $init;
       // TODO
       // More checks here
       forEach($array, function(item, i, array) {
-        ret = $callback(ret, item);
+        ret = $combine(ret, item);
       });
       return ret;
     })();
   }
-  rule { ($array, $callback:ident, init, $scope) } => {
+  rule { ($array, $combine:ident, init, $scope) } => {
     (function() {
       var ret = $init;
       // TODO
       // More checks here
       forEach($array, function(item, i, array) {
-        ret = $callback.call($scope, ret, item);
-      });
-      return ret;
-    })();
-  }
-  
-  rule { ($array, $callback:expr) } => {
-    (function() {
-      var ret = $init;
-      // TODO
-      // More checks here
-      forEach($array, function(item, i, array) {
-        ret = $callback(ret, item);
+        ret = $combine.call($scope, ret, item);
       });
       return ret;
     })();
   }
   
-  rule { ($array, $callback:expr, $scope) } => {
+  rule { ($array, $combine:expr) } => {
     (function() {
       var ret = $init;
       // TODO
       // More checks here
       forEach($array, function(item, i, array) {
-        ret = $callback.call($scope, ret, item);
+        ret = $combine(ret, item);
+      });
+      return ret;
+    })();
+  }
+  
+  rule { ($array, $combine:expr, $scope) } => {
+    (function() {
+      var ret = $init;
+      // TODO
+      // More checks here
+      forEach($array, function(item, i, array) {
+        ret = $combine.call($scope, ret, item);
       });
       return ret;
     })();
